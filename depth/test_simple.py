@@ -167,7 +167,7 @@ def test_simple(args):
 
 
 if __name__ == '__main__':
-    args = parse_args('assets/frame550.jpg')
+    args = parse_args('assets/')
     args.model_name = 'mono+stereo_1024x320'
     args.pred_metric_depth = True
     test_simple(args)
