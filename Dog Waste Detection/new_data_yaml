@@ -1,0 +1,7 @@
+
+        train: /content/drive/MyDrive/MIE1075/data/images/train
+        val: /content/drive/MyDrive/MIE1075/data/images/val
+ 
+        nc: 1
+        names: ['Dog waste']
+        
