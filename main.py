@@ -51,7 +51,7 @@ if __name__ == "__main__":
             track_center_x, track_center_y = tracker.target_segmentation(frame, args)
             # feed tracking center to depth computer network
             depth_map = predict_depth(frame)
-            depth = depth_map[tracker_center_x, track_center_y]
+            depth = depth_map[track_center_x, track_center_y]
             # use depth to calculate steering angle
             angle = tracked_center_displacement(track_center_x, depth, frame.shape, intrinstic)
             # waste identification
