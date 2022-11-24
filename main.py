@@ -3,7 +3,7 @@ import cv2
 import tracking
 from model import AppearanceModel
 from model.siamfc import SiamFC
-from depth.predict import predict_depth
+from depth import *
 import argparse
 import yaml
 import model_config
