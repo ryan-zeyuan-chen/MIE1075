@@ -70,7 +70,7 @@ def predict_depth(input_image):
             disp, (original_height, original_width), mode="bilinear", align_corners=False)
 
         scaled_disp, depth = disp_to_depth(disp, 0.1, 100)
-        metric_depth = np.squeeze(STEREO_SCALE_FACTOR * depth.cpu().numpy())
+        metric_depth = np.squeeze(STEREO_SCALE_FACTOR * depth.cpu().numpy()).transpose()
 
     print('-> Done!')
     return metric_depth
