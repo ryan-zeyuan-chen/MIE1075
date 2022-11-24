@@ -3,6 +3,7 @@ import cv2
 import tracking
 from model import AppearanceModel
 from model.siamfc import SiamFC
+from depth.predict import predict_depth
 import argparse
 import yaml
 import model_config
@@ -49,9 +50,9 @@ if __name__ == "__main__":
             # track object & extract tracking center
             track_center_x, track_center_y = tracker.target_segmentation(frame, args)
             # feed tracking center to depth computer network
-            depth =
+            depth_map = predict_depth(frame)
+            depth = depth_map[tracker_center_x, track_center_y]
             # use depth to calculate steering angle
             angle = tracked_center_displacement(track_center_x, depth, frame.shape, intrinstic)
             # waste identification
             waste_img =
-
