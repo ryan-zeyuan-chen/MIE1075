@@ -1,6 +1,7 @@
 import cv2
 
 import tracking
+from depth.predict import predict_depth
 from model import AppearanceModel
 from model.siamfc import SiamFC
 from depth import *
@@ -9,6 +10,7 @@ import yaml
 import model_config
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 from orientation import tracked_center_displacement
 
@@ -45,14 +47,26 @@ if __name__ == "__main__":
     tracker = tracking.ObjectTracking(model)
 
     video = load_video(args.input)
+
+    intrinstic = np.array([[7, 0, 5.4], [0, 7, 9.6], [0, 0, 1]])
     if video != -1:
         for frame in video:
             # track object & extract tracking center
-            track_center_x, track_center_y = tracker.target_segmentation(frame, args)
+            track_center_x, track_center_y = tracker.target_segmentation(frame.copy(), args)
             # feed tracking center to depth computer network
             depth_map = predict_depth(frame)
-            depth = depth_map[track_center_x, track_center_y]
-            # use depth to calculate steering angle
-            angle = tracked_center_displacement(track_center_x, depth, frame.shape, intrinstic)
+            try:
+                depth = depth_map[track_center_x, track_center_y]
+                depth_map = cv2.normalize(depth_map, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
+                cv2.imshow("depth", depth_map)
+                cv2.waitKey(40)
+
+                # use depth to calculate steering angle
+                angle = tracked_center_displacement(track_center_x / 100, depth, (9.6, 5.4), intrinstic)
+                print(angle)
+            except IndexError as e:
+                print(track_center_x)
+                print(track_center_y)
+                print("!!")
             # waste identification
-            waste_img =
+            # waste_img =

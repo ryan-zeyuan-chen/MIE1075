@@ -8,10 +8,11 @@ import PIL.Image as pil
 import torch
 from torchvision import transforms, datasets
 
-import networks
-from layers import disp_to_depth
-from utils import download_model_if_doesnt_exist
-from evaluate_depth import STEREO_SCALE_FACTOR
+import depth.networks as networks
+from depth.layers import disp_to_depth
+from depth.utils import download_model_if_doesnt_exist
+from depth.evaluate_depth import STEREO_SCALE_FACTOR
+import cv2
 
 def open_image(image_path):
     input_image = pil.open(image_path).convert('RGB')
@@ -25,12 +26,12 @@ def predict_depth(input_image):
 
     download_model_if_doesnt_exist("mono+stereo_1024x320")
     model_path = os.path.join("models", "mono+stereo_1024x320")
-    print("-> Loading model from ", model_path)
+    # print("-> Loading model from ", model_path)
     encoder_path = os.path.join(model_path, "encoder.pth")
     depth_decoder_path = os.path.join(model_path, "depth.pth")
 
     # LOADING PRETRAINED MODEL
-    print("   Loading pretrained encoder")
+    # print("   Loading pretrained encoder")
     encoder = networks.ResnetEncoder(18, False)
     loaded_dict_enc = torch.load(encoder_path, map_location=device)
 
@@ -42,7 +43,7 @@ def predict_depth(input_image):
     encoder.to(device)
     encoder.eval()
 
-    print("   Loading pretrained decoder")
+    # print("   Loading pretrained decoder")
     depth_decoder = networks.DepthDecoder(
         num_ch_enc=encoder.num_ch_enc, scales=range(4))
 
@@ -54,10 +55,9 @@ def predict_depth(input_image):
 
     # PREDICTING ON IMAGE
     with torch.no_grad():
-
         # Load image and preprocess
-        original_width, original_height = input_image.size
-        input_image = input_image.resize((feed_width, feed_height), pil.LANCZOS)
+        original_width, original_height = input_image.shape[1], input_image.shape[0]
+        input_image = cv2.resize(input_image, (feed_width, feed_height))
         input_image = transforms.ToTensor()(input_image).unsqueeze(0)
 
         # PREDICTION
@@ -66,13 +66,13 @@ def predict_depth(input_image):
         outputs = depth_decoder(features)
 
         disp = outputs[("disp", 0)]
-        disp_resized = torch.nn.functional.interpolate(
-            disp, (original_height, original_width), mode="bilinear", align_corners=False)
+        disp = torch.nn.functional.interpolate(
+            disp, (original_width, original_height), mode="bilinear", align_corners=False)
 
         scaled_disp, depth = disp_to_depth(disp, 0.1, 100)
         metric_depth = np.squeeze(STEREO_SCALE_FACTOR * depth.cpu().numpy()).transpose()
 
-    print('-> Done!')
+    # print('-> Done!')
     return metric_depth
 
 if __name__ == '__main__':
