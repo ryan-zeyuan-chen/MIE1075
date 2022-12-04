@@ -90,6 +90,6 @@ class ObjectTracking(object):
             track_center_x = bounding_box[0] + bounding_box[2] // 2
             track_center_y = bounding_box[1] + bounding_box[3] // 2
 
-        return track_center_x, track_center_y
+        return track_center_y, track_center_x
 
 

@@ -50,6 +50,7 @@ if __name__ == "__main__":
 
     intrinstic = np.array([[7, 0, 5.4], [0, 7, 9.6], [0, 0, 1]])
     if video != -1:
+        print(video[0].shape)
         for frame in video:
             # track object & extract tracking center
             track_center_x, track_center_y = tracker.target_segmentation(frame.copy(), args)
@@ -63,7 +64,7 @@ if __name__ == "__main__":
 
                 # use depth to calculate steering angle
                 angle = tracked_center_displacement(track_center_x / 100, depth, (9.6, 5.4), intrinstic)
-                print(angle)
+                # print(angle)
             except IndexError as e:
                 print(track_center_x)
                 print(track_center_y)
