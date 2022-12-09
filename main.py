@@ -73,7 +73,6 @@ if __name__ == "__main__":
                 
             # waste identification
             if f_count > 100:
-                
                 run(source= frame, weight ='/MIE1075/waste/yolov5/runs/train/exp3/weights/best.pt', save_txt = True）
                 f_count = 0
             else:
