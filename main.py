@@ -5,7 +5,7 @@ from depth.predict import predict_depth
 from model import AppearanceModel
 from model.siamfc import SiamFC
 from depth import *
-from waste import *
+from waste/yolov5 import *
 import argparse
 import yaml
 import model_config
