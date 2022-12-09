@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 print(track_center_y)
                 print("!!")
             # waste identification
-            if f_count < 100:
+            if f_count > 100:
                 waste_num = run(source= frame）
                 print("Number of waste detected:", waste_num)
                 f_count += 1
