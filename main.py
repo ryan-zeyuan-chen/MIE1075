@@ -5,7 +5,7 @@ from depth.predict import predict_depth
 from model import AppearanceModel
 from model.siamfc import SiamFC
 from depth import *
-from waste import *
+import waste.yolov5.detect
 import argparse
 import yaml
 import model_config
@@ -57,23 +57,18 @@ if __name__ == "__main__":
             track_center_x, track_center_y = tracker.target_segmentation(frame.copy(), args)
             # feed tracking center to depth computer network
             depth_map = predict_depth(frame)
-            try:
-                depth = depth_map[track_center_x, track_center_y]
-                depth_map = cv2.normalize(depth_map, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
-                cv2.imshow("depth", depth_map)
-                cv2.waitKey(40)
 
-                # use depth to calculate steering angle
-                angle = tracked_center_displacement(track_center_x / 100, depth, (9.6, 5.4), intrinstic)
-                print(angle)
-            except IndexError as e:
-                print(track_center_x)
-                print(track_center_y)
-                print("!!")
+            depth = depth_map[track_center_x, track_center_y]
+            depth_map = cv2.normalize(depth_map, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
+            cv2.imshow("depth", depth_map)
+            cv2.waitKey(40)
+
+            # use depth to calculate steering angle
+            angle = tracked_center_displacement(track_center_x / 100, depth, 7, 3.2)
+            print(angle)
             # waste identification
-            if f_count < 100:
-                waste_num = run(source= frame）
-                print("Number of waste detected:", waste_num)
-                f_count += 1
-            else:
+            if f_count > 100:
+                waste.yolov5.detect.run(source=frame, weights='waste/yolov5/runs/train/exp3/weights/best.pt', save_txt=True)
                 f_count = 0
+            else:
+                f_count += 1
