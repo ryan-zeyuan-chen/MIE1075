@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 print("!!")
             # waste identification
             if f_count > 100:
-                waste_num = run(source= frame）
+                waste_num = run(source= frame, weight ='/MIE1075/waste/yolov5/runs/train/exp3/weights/best.pt', save_txt = True）
                 print("Number of waste detected:", waste_num)
                 f_count += 1
             else:
