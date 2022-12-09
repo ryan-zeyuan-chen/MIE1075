@@ -5,7 +5,7 @@ from depth.predict import predict_depth
 from model import AppearanceModel
 from model.siamfc import SiamFC
 from depth import *
-from waste.yolov5 import *
+from waste.yolov5.detect import run
 import argparse
 import yaml
 import model_config
@@ -71,9 +71,11 @@ if __name__ == "__main__":
                 print(track_center_y)
                 print("!!")
                 
-            # waste identification
+            # waste identification          
             if f_count > 100:
-                run(source= frame, weight ='/MIE1075/waste/yolov5/runs/train/exp3/weights/best.pt', save_txt = True）
+                cv2.imwrite("frame.jpg", frame)
+                run(source="frame.jpg", weights='waste/yolov5/runs/train/exp3/weights/best.pt',
+                                 save_txt=False)
                 f_count = 0
             else:
                 f_count += 1
